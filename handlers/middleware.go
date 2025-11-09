@@ -9,6 +9,11 @@ import (
 
 func RequireAPIToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		if os.Getenv("API") == "invalid" {
+			c.JSON(http.StatusForbidden, gin.H{"error": "API access is disabled"})
+			c.Abort()
+			return
+		}
 		if os.Getenv("API") != "required" {
 			c.Next()
 			return

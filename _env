@@ -1,6 +1,9 @@
 # Environment variables
 ORIGINAL_LINK = https://example.com/
 
+# Cors setting
+ALLOWORIGINS = https://example.com/
+
 # API settings
 API = required
 API_TOKEN = your_api_token

@@ -47,7 +47,8 @@ func main() {
 	// Ginのセットアップ
 	r:= gin.Default()
 	log.Println("Starting server on :8080")
-	allowOrigins := []string{"http://localhost:3000", "https://example.com"}
+	EnvAllowOrigins := os.Getenv("ORIGINAL_LINK")
+	allowOrigins := []string{"http://localhost:3000", EnvAllowOrigins}
 	r.Use(corsMiddleware(configs.Config.APICorsAllowOrigins))
 
 	r.GET("/", func(c *gin.Context) {

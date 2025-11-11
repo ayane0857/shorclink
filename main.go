@@ -49,7 +49,7 @@ func main() {
 	log.Println("Starting server on :8080")
 	EnvAllowOrigins := os.Getenv("ORIGINAL_LINK")
 	allowOrigins := []string{"http://localhost:3000", EnvAllowOrigins}
-	r.Use(corsMiddleware(configs.Config.APICorsAllowOrigins))
+	r.Use(corsMiddleware(allowOrigins))
 
 	r.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusMovedPermanently, original_link)
@@ -60,8 +60,8 @@ func main() {
 	{
 		api.GET("/", handlers.GetShortLinks(db))
 		api.GET("/:id", handlers.GetShortLink(db))
-		api.POST("/", handlers.SetShortCode(), handlers.PostShortLink(db))
-		api.PUT("/:id", handlers.SetShortCode(), handlers.PutShortLink(db))
+		api.POST("/", handlers.SetShortCode(db), handlers.PostShortLink(db))
+		api.PUT("/:id", handlers.SetShortCode(db), handlers.PutShortLink(db))
 		api.DELETE("/:id",  handlers.DeleteShortLink(db))
 	}
 

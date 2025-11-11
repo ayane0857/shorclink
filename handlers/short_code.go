@@ -10,9 +10,10 @@ import (
 	"shorclick/models"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-func SetShortCode() gin.HandlerFunc {
+func SetShortCode(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if os.Getenv("SHORT_CODE") == "required" {
 			RequiredShortCode()(c)
@@ -26,6 +27,24 @@ func SetShortCode() gin.HandlerFunc {
 			AutoShortCode(length)(c)
 		} else {
 			GenerateShortCode(8)(c)
+		}
+		var model models.ShortLink
+		Short_codeInterface, exists := c.Get("short_code")
+        Short_code, ok := Short_codeInterface.(string)
+		if !exists {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Short code not found in context"})
+			return
+		}
+        if !ok {
+            c.JSON(http.StatusInternalServerError, gin.H{"error": "Short code is not a valid string"})
+            return
+        }
+		result := db.First(&model, "short_code = ?", Short_code)
+	
+		if result.Error == nil {
+			c.JSON(http.StatusConflict, gin.H{"error": "Short code already exists"})
+			c.Abort()
+			return
 		}
 		c.Next()
 		return
